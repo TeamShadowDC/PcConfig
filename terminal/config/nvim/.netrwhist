@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =0
+let g:netrw_dirhist_0='/mnt/docker/BugBounty'
+let g:netrw_dirhist_9='/mnt/docker/config/zsh'
+let g:netrw_dirhist_8='/mnt/docker/kali'
+let g:netrw_dirhist_7='/mnt/docker'
+let g:netrw_dirhist_6='/mnt/docker/kali'
+let g:netrw_dirhist_5='/mnt/docker/kali/test'
+let g:netrw_dirhist_4='/mnt/docker/kali/test/work'
+let g:netrw_dirhist_3='/mnt/docker/kali/test'
+let g:netrw_dirhist_2='/home/jack/.config/polybar/polybar-5'
+let g:netrw_dirhist_1='/home/jack/.config/polybar/polybar-5/scripts'
