@@ -1,0 +1,35 @@
+# Tools 
+
+- tmux 
+- nmap
+- nikto
+- zsh
+- dnsutil
+- sqlmap
+- wfuzz
+- ffuf
+- wpscan
+- dnsrecon
+- cracmapexe
+- netcat
+- dirsearch
+- whatweb
+- r2frida
+- evil-winrm
+-dnsenum 
+
+# Wordlist 
+
+- SecList
+
+# Scripts 
+
+- enum4linux
+- LinEnum
+- pspy64
+
+# Web shells
+- simple-backdoor.php
+- php-reverse-shell
+- simple-php-shell
+
