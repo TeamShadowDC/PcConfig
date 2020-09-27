@@ -11,7 +11,8 @@ RUN mkdir ${HOME}/toolkit && \
     mkdir ${HOME}/wordlists && \
     mkdir -p ${HOME}/scripts/Enumeration && \ 
     mkdir ${HOME}/scripts/PrivEsc && \ 
-    mkdir ${HOME}/scripts/Web
+    mkdir ${HOME}/scripts/Web && \
+    mkdir -p ${HOME}/.zsh/pluguins/
 
 
 
@@ -42,7 +43,7 @@ RUN apt-get update && \
     net-tools \
     neovim\
     zsh\
-    nano\
+ #   nano\
     libzip-dev \ 
     nodejs \
     npm \
@@ -60,14 +61,16 @@ RUN apt-get update && \
     #python-pycurl \
     # dnsenum
     cpanminus \
+    #Metasploit
+    metasploit-framework \ 
     # wpcscan
-    libcurl4-openssl-dev \
-    libxml2 \
-    libxml2-dev \
-    libxslt1-dev \
-    ruby-dev \
-    libgmp-dev \
-    zlib1g-dev \
+ #   libcurl4-openssl-dev \
+ #   libxml2 \
+ #   libxml2-dev \
+ #   libxslt1-dev \
+ #   ruby-dev \
+ #   libgmp-dev \
+ #   zlib1g-dev \
     # dnsrecon
     dnsrecon \
     #crackmapexe
@@ -84,30 +87,27 @@ RUN apt-get update && \
     #hashcat
     hashcat \
     #JohnTheRipper
-    john \
+#    john \
     # hash-identifier
     hash-identifier \
     # hydra
-    hydra \
+#    hydra \
     #tcpdump 
     tcpdump \ 
     #openvpn
-    openvpn \
+#    openvpn \
     && rm -rf /var/lib/apt/lists/*
-
-# wfuzz
-#RUN pip install wfuzz
 
 
     # configure python(s)
 RUN python3 -m pip install --upgrade setuptools && python3 -m pip install --upgrade setuptools
 
 # wpscan
-RUN cd ${HOME}/toolkit && \
-    git clone https://github.com/wpscanteam/wpscan.git && \
-    cd wpscan/ && \
-    gem install bundler && bundle install --without test && \
-    gem install wpscan
+#RUN cd ${HOME}/toolkit && \
+#    git clone https://github.com/wpscanteam/wpscan.git && \
+#    cd wpscan/ && \
+#    gem install bundler && bundle install --without test && \
+#    gem install wpscan
 
 # go
 RUN cd /opt && \
@@ -120,11 +120,11 @@ ENV GOPATH /root/go
 ENV PATH ${GOPATH}/bin:${GOROOT}/bin:${PATH}
 
 # dirsearch
-RUN cd ${HOME}/toolkit && \
-    git clone https://github.com/AlexisAhmed/dirsearch.git && \
-    cd dirsearch && \
-    chmod +x dirsearch.py && \
-    ln -sf ${HOME}/toolkit/dirsearch/dirsearch.py /usr/local/bin/dirsearch
+#RUN cd ${HOME}/toolkit && \
+#    git clone https://github.com/AlexisAhmed/dirsearch.git && \
+#    cd dirsearch && \
+#    chmod +x dirsearch.py && \
+#    ln -sf ${HOME}/toolkit/dirsearch/dirsearch.py /usr/local/bin/dirsearch
 
 # ffuf 
 RUN go get github.com/ffuf/ffuf
@@ -138,7 +138,8 @@ RUN go get github.com/ffuf/ffuf
 
 # zsh 
 
-RUN wget https://raw.githubusercontent.com/internetghost2/PcConfig/master/LABS/docker/config/zsh/.zshrc && \
+RUN wget https://raw.githubusercontent.com/TeamShadowDC/PcConfig/master/LABS/docker/config/zsh/.oh-my-zsh/themes/oxide.zsh-theme && \
+    mv oxide.zsh-theme .zshrc && \
     chsh -s /bin/zsh && \
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.zsh-syntax-highlighting" --depth 1 && \
     echo "source $HOME/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> "$HOME/.zshrc"
@@ -201,14 +202,13 @@ RUN cd ${HOME}/wordlists && \
 
 #Nvim like vscode
 
-
-
-
-
-
 # Add alias
 RUN echo -n "\n\n#Alias\n" >> .zshrc && \
     echo 'alias ll="ls -l"' >> .zshrc && \
     echo 'alias la="ls -a"' >> .zshrc && \
     echo 'alias lla="ls -la"' >> .zshrc && \
     echo 'alias cme="cracmapexe"' >> .zshrc 
+
+
+
+
