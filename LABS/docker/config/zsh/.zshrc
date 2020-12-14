@@ -1,64 +1,88 @@
-# Themes.
-ZSH_THEME="oxide"
+# Theme for Zsh
 
-# Case-sensitive completion.
-CASE_SENSITIVE="true"
+setopt PROMPT_SUBST
 
-# Disable bi-weekly auto-update checks.
-DISABLE_AUTO_UPDATE="true"
+autoload -U add-zsh-hook
+autoload -Uz vcs_info
 
-# Disable auto-setting terminal title.
-DISABLE_AUTO_TITLE="true"
-
-# Disable marking untracked files under VCS as dirty.
-DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# History.
-HIST_STAMPS="yyyy-mm-dd"
-
-# Plugins.
-plugins=(
-    archive
-    extract
-    git
-)
-
-# Environment variables.
-source ~/.exports
-
-# Oh My Zsh.
-source ~/.oh-my-zsh/oh-my-zsh.sh
-
-# User config.
-source ~/.zsh/setopt.zsh
-
-# Aliases.
-source ~/.aliases
-source ~/.aliases_private
-
-# Functions.
-source ~/.functions
-source ~/.functions_private
-
-# Tracks your most used directories, based on frecency with z.
-source ~/.zsh/plugins/z/z.sh
-
-# dircolors.
-if [ -x "$(command -v dircolors)" ]; then
-    eval "$(dircolors -b ~/.dircolors)"
+# Use True color (24-bit) if available.
+if [[ "${terminfo[colors]}" -ge 256 ]]; then
+    oxide_turquoise="%F{73}"
+    oxide_orange="%F{179}"
+    oxide_red="%F{167}"
+    oxide_limegreen="%F{107}"
+else
+    oxide_turquoise="%F{cyan}"
+    oxide_orange="%F{yellow}"
+    oxide_red="%F{red}"
+    oxide_limegreen="%F{green}"
 fi
 
-# fzf key bindings.
-if [ -x "$(command -v fzf)" ]; then
-    source ~/.fzf/shell/key-bindings.zsh
-fi
+# Reset color.
+oxide_reset_color="%f"
 
-# Manage SSH with Keychain.
-if [ -x "$(command -v keychain)" ]; then
-    eval "$(keychain --eval --quiet id_rsa_github id_rsa_gitlab)"
-fi
+# VCS style formats.
+FMT_UNSTAGED="%{$oxide_reset_color%} %{$oxide_orange%}●"
+FMT_STAGED="%{$oxide_reset_color%} %{$oxide_limegreen%}✚"
+FMT_ACTION="(%{$oxide_limegreen%}%a%{$oxide_reset_color%})"
+FMT_VCS_STATUS="on %{$oxide_turquoise%} %b%u%c%{$oxide_reset_color%}"
 
-# Base16 Shell.
-if [ -f ~/.local/bin/base16-oxide ]; then
-    source ~/.local/bin/base16-oxide
-fi
+zstyle ':vcs_info:*' enable git svn
+zstyle ':vcs_info:*' check-for-changes true
+zstyle ':vcs_info:*' unstagedstr    "${FMT_UNSTAGED}"
+zstyle ':vcs_info:*' stagedstr      "${FMT_STAGED}"
+zstyle ':vcs_info:*' actionformats  "${FMT_VCS_STATUS} ${FMT_ACTION}"
+zstyle ':vcs_info:*' formats        "${FMT_VCS_STATUS}"
+zstyle ':vcs_info:*' nvcsformats    ""
+zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
+
+# Check for untracked files.
++vi-git-untracked() {
+    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+            git status --porcelain | grep --max-count=1 '^??' &> /dev/null; then
+        hook_com[staged]+="%{$oxide_reset_color%} %{$oxide_red%}●"
+    fi
+}
+
+# Function see IP eth or tun0
+
+function cVPN(){
+  if [[ $(ip add | grep tun0 2>/dev/null) ]]; then
+      VPN=$(ip add | grep tun0 | grep inet | awk '{print $2}' | cut -d / -f1)
+  else 
+      VPN=$(ip add | grep eth0 | grep inet | awk '{print $2}' | cut -d / -f1)
+  fi
+  echo $VPN
+}
+
+# Executed before each prompt.
+add-zsh-hook precmd vcs_info
+
+# Oxide prompt style.
+PROMPT=$'\n%{$oxide_orange%}$USER%{$oxide_reset_color%}@%{$oxide_limegreen%}$HOST%{$oxide_reset_color%}%{$oxide_fuego%} [ $(cVPN) ] %{$oxide_reset_color%}%{$oxide_limegreen%}%~%{$oxide_reset_color%} ${vcs_info_msg_0_}\n%(?.%{%F{white}%}.%{$oxide_red%})%(!.#.❯)%{$oxide_reset_color%} '
+
+source ${HOME}/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ${HOME}/.zsh-history-substring-search/zsh-history-substring-search.zsh
+
+## Functions 
+
+function mkt(){
+  mkdir -p {info/scan,scripts,exploits/cve,exploits/custom}
+  touch info/apuntes.md
+}
+
+## Function tmux for CTF
+# htmux <machine-name>
+function htmux(){
+  mkt
+  tmux new -n Apuntes -s $1 \; send-keys 'nvim info/apuntes.md' C-m \; split-window -v -p 10 \; neww -n SCANN \; send-keys 'cd info/scan' C-m \; neww -n EXPLOIT \; send-keys 'cd exploits' C-m \; neww -n CUSTOM  \; send-keys 'nvim scripts/PoC.py' C-m \; split-window -v -p 10 \; send-keys 'cd scripts' C-m \; selectw -t 1 \;
+}
+
+#Alias 
+alias ls="lsd"
+alias ll="ls -l"
+alias la="ls -a"
+alias lla="ls -la"
+
+# Created by `userpath` on 2020-10-02 11:51:10
+export PATH="$PATH:${HOME}/.local/bin"
